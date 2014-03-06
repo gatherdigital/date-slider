@@ -1,0 +1,71 @@
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.10'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.9.+'
+    }
+}
+
+apply plugin: 'android-library'
+apply plugin: 'maven'
+
+version = "0.0.6-SNAPSHOT"
+group = "com.codeslap"
+
+android {
+    compileSdkVersion 16
+    buildToolsVersion '19.0.3'
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            res.srcDirs = ['res']
+        }
+    }
+}
+
+configurations {
+    archives {
+        extendsFrom configurations.default
+    }
+}
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories.mavenDeployer {
+//        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        repository(url: project.hasProperty('sonatypeRepo') ? sonatypeRepo : '') {
+            authentication(
+                    userName: project.hasProperty('sonatypeUsername') ? sonatypeUsername : '',
+                    password: project.hasProperty('sonatypePassword') ? sonatypePassword : '')
+        }
+
+        pom.project {
+            name 'Android DateSlider'
+            description 'Android Library with Date Time Dialog Pickers'
+            url 'https://github.com/casidiablo/date-slider/tree/develop'
+            packaging 'aar'
+
+            scm {
+                url 'git@github.com:casidiablo/date-slider.git'
+                connection 'scm:git:git@github.com:casidiablo/date-slider.git'
+                developerConnection 'scm:git:git@github.com:casidiablo/date-slider.git'
+            }
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+        }
+    }
+}
